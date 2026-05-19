@@ -1,0 +1,11 @@
+python scripts/train_segmentation.py `
+  --data configs/cattle_seg.yaml `
+  --model yolov8s-seg.pt `
+  --imgsz 640 `
+  --epochs 100 `
+  --patience 20 `
+  --batch 16 `
+  --seed 42 `
+  --project cattle_runs `
+  --name seg_yolov8s_640 `
+  --device 0

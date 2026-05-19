@@ -1,0 +1,6 @@
+path: ../dataset/annotation/detect
+train: images/train
+val: images/val
+
+names:
+  0: cattle

@@ -1,0 +1,13 @@
+{
+  "high_count_threshold": 9,
+  "high_occupancy_threshold": 0.18,
+  "sudden_change_threshold": 4,
+  "primary_monitoring_signal": "segmentation",
+  "event_types": [
+    "EMPTY_SCENE",
+    "HIGH_DENSITY",
+    "HIGH_OCCUPANCY",
+    "SUDDEN_COUNT_INCREASE",
+    "SUDDEN_COUNT_DECREASE"
+  ]
+}

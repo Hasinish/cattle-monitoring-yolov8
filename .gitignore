@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pt
+*.onnx
+*.engine
+runs/
+cattle_runs/
+cattle_project_outputs/
+dataset/
+.DS_Store
+.env
+.vscode/
+.idea/

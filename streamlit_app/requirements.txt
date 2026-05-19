@@ -1,0 +1,9 @@
+streamlit
+ultralytics==8.4.51
+torch
+torchvision
+opencv-python
+numpy
+pandas
+pillow
+imageio-ffmpeg

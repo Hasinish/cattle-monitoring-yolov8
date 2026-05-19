@@ -1,0 +1,11 @@
+python scripts/train_detection.py `
+  --data configs/cattle_det.yaml `
+  --model yolov8s.pt `
+  --imgsz 640 `
+  --epochs 100 `
+  --patience 20 `
+  --batch 32 `
+  --seed 42 `
+  --project cattle_runs `
+  --name det_yolov8s_640 `
+  --device 0
