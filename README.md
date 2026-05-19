@@ -4,7 +4,9 @@ This repository contains the complete project code for:
 
 **Cattle Monitoring System Using YOLOv8 Detection and Instance Segmentation**
 
-The project compares YOLOv8s object detection and YOLOv8s instance segmentation for cattle monitoring, then upgrades the model outputs into an end-to-end monitoring system.
+The project compares YOLOv8s object detection and YOLOv8s instance segmentation for cattle monitoring, then extends the model outputs into an end-to-end monitoring system with event detection, dashboard generation, annotated video output, and a local Streamlit application.
+
+---
 
 ## What This Project Does
 
@@ -26,7 +28,7 @@ This is not only a YOLO training project. The full pipeline includes:
    - Compares detection and segmentation using a common ground-truth count.
 
 5. **Monitoring pipeline**
-   - Converts model outputs into monitoring signals:
+   - Converts model outputs into practical monitoring signals:
      - cattle count
      - occupancy
      - density status
@@ -46,6 +48,11 @@ This is not only a YOLO training project. The full pipeline includes:
 8. **Annotated video generation**
    - Creates an MP4 demo video with masks, boxes, count, occupancy, and events overlaid.
 
+9. **Streamlit application**
+   - Allows a user to upload a cattle video, run the trained segmentation model, and automatically generate an annotated monitoring video, frame-level CSV, and event log.
+
+---
+
 ## Final Experiment Summary
 
 The final comparison used 545 validation frames.
@@ -61,17 +68,21 @@ The final comparison used 545 validation frames.
 
 Segmentation performed better for both count estimation and occupancy estimation.
 
+---
+
 ## Repository Structure
 
 ```text
-cattle_monitoring_yolov8_FULL_UPDATED_CODE_PACKAGE/
+cattle-monitoring-yolov8/
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
+│
 ├── configs/
 │   ├── cattle_det.yaml
 │   ├── cattle_seg.yaml
 │   └── monitoring_config.json
+│
 ├── scripts/
 │   ├── train_detection.py
 │   ├── train_segmentation.py
@@ -83,24 +94,103 @@ cattle_monitoring_yolov8_FULL_UPDATED_CODE_PACKAGE/
 │   ├── cattle_monitoring_system.py
 │   ├── build_monitoring_dashboard.py
 │   ├── make_monitoring_video.py
+│   │
 │   └── windows/
 │       ├── run_training_detection.ps1
 │       ├── run_training_segmentation.ps1
 │       ├── run_prediction_detection.ps1
 │       ├── run_prediction_segmentation.ps1
 │       └── run_full_monitoring_pipeline.ps1
+│
 ├── docs/
 │   ├── COMMANDS.md
 │   └── PROJECT_DESCRIPTION.md
+│
+├── figures/
+│   ├── README.md
+│   ├── plot_count_over_time_commonGT_01.png
+│   ├── plot_count_abs_error_commonGT_01.png
+│   ├── plot_occupancy_abs_error_01.png
+│   ├── plot_metric_summary_REPORT_READY.png
+│   └── qualitative_detection_vs_segmentation_5ROWS.png
+│
 ├── results/
-└── figures/
+│   ├── README.md
+│   ├── summary_commonGT_01.csv
+│   └── frame_level_commonGT_01.csv
+│
+├── sample_outputs/
+│   └── README.md
+│
+└── streamlit_app/
+    ├── app.py
+    ├── requirements.txt
+    ├── README.md
+    ├── models/
+    │   └── segmentation_best.pt      # not included in Git
+    └── outputs/                      # generated output, ignored by Git
 ```
 
+---
+
 ## Installation
+
+### Basic CPU Installation
 
 ```bash
 pip install -r requirements.txt
 ```
+
+For the Streamlit app:
+
+```bash
+pip install -r streamlit_app/requirements.txt
+```
+
+### NVIDIA GPU Installation
+
+If you want to use GPU inference, install CUDA-supported PyTorch.
+
+Recommended Python version: **Python 3.12**
+
+```bash
+py -3.12 -m pip install --upgrade pip
+py -3.12 -m pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+```
+
+Verify GPU support:
+
+```bash
+py -3.12 -c "import torch; print(torch.__version__); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'NO CUDA')"
+```
+
+Expected output should show:
+
+```text
+True
+NVIDIA GPU name
+```
+
+---
+
+## Trained Weights
+
+The trained YOLOv8s weights are stored separately because `.pt` model files are large.
+
+Download trained weights here:
+
+- YOLOv8s Detection model: `<GOOGLE_DRIVE_DETECTION_WEIGHT_LINK>`
+- YOLOv8s Segmentation model: `<GOOGLE_DRIVE_SEGMENTATION_WEIGHT_LINK>`
+
+For the Streamlit app, download the segmentation model and place it at:
+
+```text
+streamlit_app/models/segmentation_best.pt
+```
+
+The app can also use another model path if you paste it into the sidebar.
+
+---
 
 ## Dataset Format
 
@@ -130,6 +220,8 @@ Both detection and segmentation use a single class:
 ```text
 0: cattle
 ```
+
+---
 
 ## Quick Usage
 
@@ -243,11 +335,102 @@ python scripts/make_monitoring_video.py \
   --fps 10
 ```
 
+---
+
+## Running the Streamlit App
+
+The Streamlit app allows a user to upload a cattle video and automatically generate:
+
+- annotated segmentation video
+- cattle count per frame
+- mask occupancy per frame
+- monitoring status
+- event log
+- downloadable CSV files
+
+### Step 1: Place the Model
+
+Download the trained segmentation model and place it here:
+
+```text
+streamlit_app/models/segmentation_best.pt
+```
+
+### Step 2: Install App Requirements
+
+```bash
+pip install -r streamlit_app/requirements.txt
+```
+
+For GPU with Python 3.12:
+
+```bash
+py -3.12 -m pip install -r streamlit_app/requirements.txt
+```
+
+### Step 3: Run the App
+
+CPU or default Python:
+
+```bash
+python -m streamlit run streamlit_app/app.py
+```
+
+GPU with Python 3.12:
+
+```bash
+py -3.12 -m streamlit run streamlit_app/app.py
+```
+
+### Step 4: App Settings
+
+In the sidebar:
+
+```text
+Device = 0      # for GPU
+Device = cpu    # for CPU
+```
+
+For low-VRAM GPUs such as GTX 1050 Ti, recommended settings:
+
+```text
+Image size = 512
+Max frames = 50 or 100 for testing
+Max frames = 0 for full video
+```
+
+Generated videos, CSV files, and event logs are saved in:
+
+```text
+streamlit_app/outputs/
+```
+
+---
+
+## Monitoring Events
+
+The system uses simple threshold-based event rules:
+
+| Event | Rule |
+|---|---|
+| Empty scene | Segmentation count = 0 |
+| High density | Segmentation count >= 9 |
+| High occupancy | Mask occupancy >= 0.18 |
+| Sudden count increase | Frame-to-frame count change >= 4 |
+| Sudden count decrease | Frame-to-frame count change <= -4 |
+
+These thresholds can be adjusted depending on camera angle, farm layout, and monitoring requirements.
+
+---
+
 ## Important Notes
 
 - Dataset files are not included because they are large.
 - Trained weights are not included because `.pt` files are large.
-- Output folders are ignored by Git through `.gitignore`.
+- Generated outputs are ignored by Git.
+- The Streamlit app requires the trained segmentation weight file to run inference.
+- CPU mode works on most machines but is slower.
+- GPU mode requires a CUDA-compatible PyTorch installation.
 - The project-specific code is mainly in:
   - `evaluate_common_gt.py`
   - `make_plots.py`
@@ -255,9 +438,12 @@ python scripts/make_monitoring_video.py \
   - `cattle_monitoring_system.py`
   - `build_monitoring_dashboard.py`
   - `make_monitoring_video.py`
+  - `streamlit_app/app.py`
+
+---
 
 ## Authors
 
 - Hasin Ishrak — ID: 22201133
-- Nusrat Lamia Faruk — ID:
-- Md. Bashir Al Lazim — ID:
+- Nusrat Lamia Faruk — ID: `<ADD_ID_HERE>`
+- Md. Bashir Al Lazim — ID: `<ADD_ID_HERE>`

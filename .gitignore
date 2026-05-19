@@ -12,3 +12,4 @@ dataset/
 .env
 .vscode/
 .idea/
+streamlit_app/outputs/
