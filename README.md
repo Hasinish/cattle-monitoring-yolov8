@@ -445,5 +445,5 @@ These thresholds can be adjusted depending on camera angle, farm layout, and mon
 ## Authors
 
 - Hasin Ishrak — ID: 22201133
-- Nusrat Lamia Faruk — ID: `<ADD_ID_HERE>`
-- Md. Bashir Al Lazim — ID: `<ADD_ID_HERE>`
+- Nusrat Lamia Faruk — ID: 24241182
+- Md. Bashir Al Lazim — ID: 24341254
